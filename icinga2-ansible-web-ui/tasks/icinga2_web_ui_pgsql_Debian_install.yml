@@ -6,14 +6,18 @@
   with_items:
   - postgresql
   - python-psycopg2
+  tags:
+    - postgres
 
 - name: Start PostgreSQL server
   service: name=postgresql
            state=started
            enabled=yes
+  tags:
+    - postgres
 
 - name: Create a Database for Icinga
-  postgresql_db: name={{ icinga2_web_db_dbuser }}
+  postgresql_db: name=icinga
                  state=present
   register: icinga_db
   sudo: yes
@@ -32,13 +36,20 @@
   tags:
     - postgres
 
+- name: Install PostgreSQL client
+  apt: pkg=postgresql-client
+       state=latest
+       install_recommends=no
+  tags:
+    - postgres
+
 - name: Import IDO Schema on Icinga Database (only once)
-  postgresql_db: name=icinga
-                 state=import
-                 target={{ icinga2_ido_pgsql_schema }}
+  command: "psql -d icinga -f {{ icinga2_ido_pgsql_schema }}"
   when: icinga_db.changed == true
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
+  tags:
+    - postgres
 
 - name: Configure Icinga2 Ido pgsql Feature
   template: src=ido-pgsql.conf.j2
@@ -47,10 +58,14 @@
             owner=nagios
             group=nagios
             mode=0640
+  tags:
+    - postgres
 
 - name: Configure pg_hba.conf
   template: src=pg_hba.conf.j2
             dest={{ icinga2_pg_hba_conf }}
+  tags:
+    - postgres
 
 - name: Enable Icinga2 Ido pgsql Feature
   command: "icinga2 feature enable ido-{{ icinga2_web_ui_ido }}"
@@ -58,3 +73,5 @@
   changed_when: "'for these changes to take effect' in features_result.stdout"
   notify:
    - restart icinga2
+  tags:
+    - postgres
