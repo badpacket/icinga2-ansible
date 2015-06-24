@@ -5,3 +5,8 @@
   service: name=icinga2
            state=restarted
            enabled=yes
+
+- name: restart postgresql
+  service: name=postgresql
+           state=restarted
+           enabled=yes

@@ -26,15 +26,26 @@
     - postgres
 
 - name: Create Icinga Database User and configure Grants
-  postgresql_user: name={{ icinga2_web_db_dbuser }}
-              password={{ icinga2_web_db_dbuser }}
+  postgresql_user: name=icinga
+              password=icinga
               state=present
-              db={{ icinga2_web_db_dbuser }}
-#              priv=GRANT,INSERT,SELECT,UPDATE,DELETE,DROP,CREATE,VIEW,INDEX,EXECUTE
+              db=icinga
   sudo: yes
   sudo_user: postgres
   tags:
     - postgres
+
+- name: Configure pg_hba.conf
+  template: src=pg_hba.conf.j2
+            dest={{ icinga2_pg_hba_conf }}
+  register: config_hba
+  tags:
+    - postgres
+
+- name: Restart postgresql
+  service: name=postgresql
+           state=restarted
+  when: config_hba|changed
 
 - name: Install PostgreSQL client
   apt: pkg=postgresql-client
@@ -44,10 +55,10 @@
     - postgres
 
 - name: Import IDO Schema on Icinga Database (only once)
-  command: "psql -d icinga -f {{ icinga2_ido_pgsql_schema }}"
-  when: icinga_db.changed == true
-  become: yes
-  become_user: postgres
+  command: "psql -U icinga -d icinga -f {{ icinga2_ido_pgsql_schema }}"
+  #when: icinga_db.changed == true
+  environment:
+    PGPASSWORD: icinga
   tags:
     - postgres
 
@@ -58,12 +69,6 @@
             owner=nagios
             group=nagios
             mode=0640
-  tags:
-    - postgres
-
-- name: Configure pg_hba.conf
-  template: src=pg_hba.conf.j2
-            dest={{ icinga2_pg_hba_conf }}
   tags:
     - postgres
 

@@ -14,15 +14,38 @@
 - include: icinga2_web_ui_pgsql_Debian_install.yml
   when: icinga2_web_ui_ido == "pgsql"
 
+- name: Create a Database for Icinga Web
+  postgresql_db: name=icingaweb
+                 state=present
+  register: icinga_db
+  sudo: yes
+  sudo_user: postgres
+
+- name: Create Icinga Database User and configure Grants
+  postgresql_user: name=icingaweb
+              password=icingaweb
+              state=present
+              db=icingaweb
+  sudo: yes
+  sudo_user: postgres
+
 - name: Install Icinga Web on Debian OS family
-  apt: pkg=icingaweb2
+  apt: pkg={{ item }}
        state=latest
        install_recommends=no
+  with_items:
+   - icingaweb2
+   - icingaweb2-module-setup
+   - icingaweb2-module-monitoring
 
 - name: Install Apache configuration
   template: src=icingaweb2.conf
             dest=/etc/apache2/sites-enabled/icingaweb2.conf
             backup=no
+
+- name: Remove default site enabled
+  file: path=/etc/apache2/sites-enabled/000-default
+        state=absent
 
 - name: Install Apache
   apt: pkg={{ item }}
@@ -31,19 +54,46 @@
   with_items:
   - apache2
   - libapache2-mod-php5
+  - php5-intl
+  - php5-pgsql
+  - php5-cli
 
 - name: Symlink Icinga workaround
   file: src=/usr/share/php/Icinga
         dest=/usr/share/icingaweb2/public/Icinga
         state=link
 
+- name: Install php.ini
+  template: src=php.ini
+            dest=/etc/php5/apache2/php.ini
+            backup=no
+
 - name: Start Apache
   service: name=apache2
            state=started
            enabled=yes
 
-- name: UI Installation finished (RH)
-  debug: msg="{{ icinga2_web_ui_ido }}"
+- name: Setup Up External Command Pipe
+  command: "icinga2 feature enable command"
+  notify:
+   - restart icinga2
 
-- name: Icinga Web UI Installation finished (RH)
-  debug: msg="Login at https://icinga2.badpacket.in with user root and password password"
+- name: Add user www-data to the icingacmd group
+  user: name=www-data
+        append=yes
+        groups=nagios
+  tags:
+    - add_group
+
+- name: Setup icinga web 2 config directory
+  command: "icingacli setup config directory"
+
+- name: Generate setup token
+  command: "icingacli setup token create"
+  register: token
+
+- name: Print token
+  debug: msg="{{ token.stdout }}"
+
+- name: Icinga Web UI Installation finished (Debian)
+  debug: msg="Login at https://icinga2.badpacket.in"

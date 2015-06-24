@@ -1,7 +1,12 @@
+# icingaweb
+local   icingaweb      icingaweb                            md5
+host    icingaweb      icingaweb      127.0.0.1/32          md5
+host    icingaweb      icingaweb      ::1/128               md5
+
 # icinga
-local   {{ icinga2_web_db_dbuser }}      {{ icinga2_web_db_dbuser }}                            md5
-host    {{ icinga2_web_db_dbuser }}      {{ icinga2_web_db_dbuser }}      127.0.0.1/32          md5
-host    {{ icinga2_web_db_dbuser }}      {{ icinga2_web_db_dbuser }}      ::1/128               md5
+local   icinga      icinga                            md5
+host    icinga      icinga      127.0.0.1/32          md5
+host    icinga      icinga      ::1/128               md5
 
 # "local" is for Unix domain socket connections only
 local   all         all                               ident
