@@ -1,6 +1,6 @@
 {% if hostvars[item]['group_names'] | difference('monitoring_servers') %}
   # A host definition
-object Host "{{ hostvars[item]['ansible_fqdn'] }}" {
+object Host "{{ hostvars[item]['ansible_hostname'] }}" {
   import "generic-host"
   address = "{{ lookup('dns', item)  }}"
   vars.os = "{{ hostvars[item]['ansible_system'] }}"
