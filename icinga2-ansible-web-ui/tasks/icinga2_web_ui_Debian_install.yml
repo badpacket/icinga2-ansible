@@ -37,6 +37,10 @@
    - icingaweb2
    - icingaweb2-module-setup
    - icingaweb2-module-monitoring
+   - nagios-plugins
+   - nagios-plugins-common
+   - nagios-plugins-extra
+   - nagios-plugins-contrib
 
 - name: Install Apache configuration
   template: src=icingaweb2.conf
