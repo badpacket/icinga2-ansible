@@ -5,9 +5,11 @@ object CheckCommand "{{ key }}" {
   import "plugin-check-command"
 
   command = [
-    PluginDir + "/{{ key }}",
-    {{ value }}
+    PluginDir + "/{{ key }}"
   ]
+
+  {{ value }}
+
 }
 
 {% endfor %}
