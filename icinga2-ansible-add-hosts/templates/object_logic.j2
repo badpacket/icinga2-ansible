@@ -20,7 +20,7 @@ object Host "{{ hostvars[item]['ansible_hostname'] }}" {
 {% if host_checks is defined %}
 {% for key,value in host_checks.iteritems() %}
 object Service "{{ key }}" {
-  host_name = "{{ hostvars[item]['ansible_fqdn'] }}"
+  host_name = "{{ hostvars[item]['ansible_hostname'] }}"
 {% for key,value in value.items() %}
   {{ key }} = "{{ value }}"
 {% endfor %}
