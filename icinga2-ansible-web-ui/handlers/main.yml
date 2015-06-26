@@ -5,7 +5,7 @@
            state=restarted
            enabled=yes
 
-- name: restart httpd
-  service: name=httpd
+- name: restart apache2
+  service: name=apache2
            state=restarted
            enabled=yes

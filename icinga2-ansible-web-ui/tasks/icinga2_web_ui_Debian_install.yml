@@ -53,10 +53,22 @@
   - php5-pgsql
   - php5-cli
 
-- name: Install Apache configuration
+- name: Install Apache site configuration
   template: src=icingaweb2.conf
             dest=/etc/apache2/sites-enabled/icingaweb2.conf
             backup=no
+  notify:
+   - restart apache2
+
+- name: Install Apache config
+  template: src={{ item }}
+            dest={{ item }}
+            backup=no
+  with_items:
+    - apache2.conf
+    - ports.conf
+  notify:
+   - restart apache2
 
 - name: Remove default site enabled
   file: path=/etc/apache2/sites-enabled/000-default
