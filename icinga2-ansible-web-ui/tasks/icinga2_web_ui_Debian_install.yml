@@ -42,15 +42,6 @@
    - nagios-plugins-extra
    - nagios-plugins-contrib
 
-- name: Install Apache configuration
-  template: src=icingaweb2.conf
-            dest=/etc/apache2/sites-enabled/icingaweb2.conf
-            backup=no
-
-- name: Remove default site enabled
-  file: path=/etc/apache2/sites-enabled/000-default
-        state=absent
-
 - name: Install Apache
   apt: pkg={{ item }}
        state=latest
@@ -61,6 +52,15 @@
   - php5-intl
   - php5-pgsql
   - php5-cli
+
+- name: Install Apache configuration
+  template: src=icingaweb2.conf
+            dest=/etc/apache2/sites-enabled/icingaweb2.conf
+            backup=no
+
+- name: Remove default site enabled
+  file: path=/etc/apache2/sites-enabled/000-default
+        state=absent
 
 - name: Symlink Icinga workaround
   file: src=/usr/share/php/Icinga
