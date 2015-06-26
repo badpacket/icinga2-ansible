@@ -62,7 +62,7 @@
 
 - name: Install Apache config
   template: src={{ item }}
-            dest={{ item }}
+            dest=/etc/apache2/{{ item }}
             backup=no
   with_items:
     - apache2.conf

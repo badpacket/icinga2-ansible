@@ -1,3 +1,4 @@
+
 {% if hostvars[item]['group_names'] | difference('monitoring_servers') %}
   # A host definition
 object Host "{{ hostvars[item]['ansible_hostname'] }}" {
@@ -19,12 +20,41 @@ object Host "{{ hostvars[item]['ansible_hostname'] }}" {
   #Here Goes Checks if Any
 {% if host_checks is defined %}
 {% for key,value in host_checks.iteritems() %}
-object Service "{{ key }}" {
-  host_name = "{{ hostvars[item]['ansible_hostname'] }}"
-{% for key,value in value.items() %}
-  {{ key }} = "{{ value }}"
-{% endfor %}
-}
+{% set service_name = key %}
+
+{% if service_name not in ['l_http', 'l_https', 'l_smtp', 'l_imaps']  %}
+  # Service name not in special services
+  object Service "{{ key }}" { 
+    host_name = "{{ hostvars[item]['ansible_hostname'] }}"
+  
+    {% for key,value in value.items() %}
+    {{ key }} = "{{ value  }}"
+    {% endfor  %}
+  }
+
+{% else  %}
+
+  object Service "{{ key }}" {
+    # {{key}} - {{value}} - {{hostvars[item]['group_names']}}
+    host_name = "{{ hostvars[item]['ansible_hostname'] }}"
+	
+    {% for key,value in value.items() %}   
+    {% if key == 'check_command' and ((service_name == 'l_http' and 'monitored_http_servers' in hostvars[item]['group_names']) or (service_name == 'l_https' and 'monitored_https_servers' in hostvars[item]['group_names']) or (service_name == 'l_smtp' and 'monitored_smtp_servers' in  hostvars[item]['group_names'] ) or (service_name == 'l_imaps' and 'monitored_imaps_servers' in hostvars[item]['group_names'] )) %}
+
+    # Special Service
+    {{ key }} = "{{ value }}"
+    
+    {% endif  %}
+    {% if key != 'check_command'  %}
+    {{ key }} = "{{ value }}"
+    {% endif  %}
+	
+    {% endfor %}
+  }
+
+{% endif  %}
+    
+
 
 {% endfor %}
 {% endif %}
