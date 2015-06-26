@@ -56,7 +56,7 @@
 
 - name: Import IDO Schema on Icinga Database (only once)
   command: "psql -U icinga -d icinga -f {{ icinga2_ido_pgsql_schema }}"
-  #when: icinga_db.changed == true
+  when: icinga_db.changed == true
   environment:
     PGPASSWORD: icinga
   tags:
