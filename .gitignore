@@ -4,3 +4,7 @@
 *.ini
 *.pem
 site.yml
+
+# SSL certificate stuff
+*.crt
+*.key
