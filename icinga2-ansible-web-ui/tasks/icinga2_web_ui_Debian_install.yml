@@ -54,12 +54,12 @@
   - php5-cli
 
 - name: Place SSL certificate in /etc/ssl
-  template: src=badpacket.in.crt
+  template: src={{badpacket_ssl_crt_path}}
             dest=/etc/ssl/badpacket.in.crt
             backup=no
 
 - name: Place private key in /etc/ssl
-  template: src=badpacket.in.key
+  template: src={{badpacket_ssl_key_path}}
             dest=/etc/ssl/badpacket.in.key
             backup=no
 
