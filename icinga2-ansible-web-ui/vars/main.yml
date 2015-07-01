@@ -1,6 +1,10 @@
 ---
 # vars file for icinga2-ansible-web-ui
 
+# Vars for *.badpacket.in SSL certificate and private key
+badpacket_ssl_crt_path: "badpacket.in.crt"
+badpacket_ssl_key_path: "badpacket.in.key"
+
 # Vars for RH OS Family
 
 icinga2_web_ui_rpm:

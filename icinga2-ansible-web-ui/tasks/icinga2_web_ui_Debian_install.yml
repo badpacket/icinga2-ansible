@@ -53,6 +53,16 @@
   - php5-pgsql
   - php5-cli
 
+- name: Place SSL certificate in /etc/ssl
+  template: src=badpacket.in.crt
+            dest=/etc/ssl/badpacket.in.crt
+            backup=no
+
+- name: Place private key in /etc/ssl
+  template: src=badpacket.in.key
+            dest=/etc/ssl/badpacket.in.key
+            backup=no
+
 - name: Install Apache site configuration
   template: src=icingaweb2.conf
             dest=/etc/apache2/sites-enabled/icingaweb2.conf
