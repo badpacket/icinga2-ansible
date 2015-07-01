@@ -6,7 +6,11 @@ object Host "{{ hostvars[item]['ansible_hostname'] }}" {
   address = "{{ lookup('dns', item)  }}"
   vars.os = "{{ hostvars[item]['ansible_system'] }}"
   vars.os_family = "{{ hostvars[item]['ansible_os_family'] }}"
+  {% if 'ansible_ssh_port' in hostvars[item] %}
   vars.ssh_port = "{{ hostvars[item]['ansible_ssh_port'] }}"
+  {% else %}
+  vars.ssh_port = 22
+  {% endif %}
 
   # Here Goes Vars and check_command
 {% for key,value in host_attributes.iteritems() %}
