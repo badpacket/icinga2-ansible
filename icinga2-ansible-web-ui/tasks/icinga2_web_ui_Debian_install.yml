@@ -63,6 +63,11 @@
             dest=/etc/ssl/badpacket.in.key
             backup=no
 
+- name: Place client cert in /etc/ssh/certs
+  template: src={{badpacket_ssl_client_cert}}
+            dest=/etc/ssl/certs/badpacket.pem
+            backup=no
+
 - name: Install Apache site configuration
   template: src=icingaweb2.conf
             dest=/etc/apache2/sites-enabled/icingaweb2.conf

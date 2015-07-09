@@ -4,6 +4,7 @@
 # Vars for *.badpacket.in SSL certificate and private key
 badpacket_ssl_crt_path: "badpacket.in.crt"
 badpacket_ssl_key_path: "badpacket.in.key"
+badpacket_ssl_client_cert: "badpacket.pem"
 
 # Vars for RH OS Family
 
