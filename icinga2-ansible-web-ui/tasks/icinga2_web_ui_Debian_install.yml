@@ -42,6 +42,11 @@
    - nagios-plugins-extra
    - nagios-plugins-contrib
 
+- name: Install icinga2 user.conf
+  template: src=users.conf
+            dest=/etc/icinga2/conf.d/users.conf
+            backup=no
+
 - name: Install Apache
   apt: pkg={{ item }}
        state=latest
