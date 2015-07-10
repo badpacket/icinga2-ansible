@@ -26,7 +26,7 @@ object Host "{{ hostvars[item]['ansible_hostname'] }}" {
 {% for key,value in host_checks.iteritems() %}
 {% set service_name = key %}
 
-{% if service_name not in ['l_http', 'l_https', 'l_smtp', 'l_imaps']  %}
+{% if service_name not in ['l_http', 'l_https', 'l_smtp', 'l_simap']  %}
   # Service name not in special services
   object Service "{{ key }}" { 
     host_name = "{{ hostvars[item]['ansible_hostname'] }}"
@@ -42,11 +42,23 @@ object Host "{{ hostvars[item]['ansible_hostname'] }}" {
   {% if (key == 'l_http' and 'monitored_http_servers' in hostvars[item]['group_names']) 
     or (key == 'l_https' and 'monitored_https_servers' in hostvars[item]['group_names']) 
     or (key == 'l_smtp' and 'monitored_smtp_servers' in  hostvars[item]['group_names']) 
-    or (key == 'l_imaps' and 'monitored_imaps_servers' in hostvars[item]['group_names']) %}
+    or (key == 'l_simap' and 'monitored_simap_servers' in hostvars[item]['group_names']) %}
 
   object Service "{{ key }}" {
     # {{key}} - {{value}} - {{hostvars[item]['group_names']}}
     host_name = "{{ hostvars[item]['ansible_hostname'] }}"
+
+    {% if (key == 'l_http') or (key == 'l_https') %}
+    vars.http_vhost = "{{item}}"
+    {% endif %}
+
+    {% if (key == 'l_smtp') %}
+    vars.smtp_address = "{{item}}"
+    {% endif %}
+
+    {% if (key == 'l_simap') %}
+    vars.simap_address = "{{item}}"
+    {% endif %}
 
     # Special Service
     {% for key,value in value.items() %}
