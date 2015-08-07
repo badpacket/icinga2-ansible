@@ -87,6 +87,7 @@
   with_items:
     - apache2.conf
     - ports.conf
+    - mods-available/ssl.conf
   notify:
    - restart apache2
 
